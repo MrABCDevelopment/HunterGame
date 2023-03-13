@@ -1,0 +1,8 @@
+name: ${project.artifactId}
+version: ${project.version}
+main: me.dreamdevs.github.huntergame.HunterGameMain
+api-version: 1.13
+
+commands:
+  huntergame:
+    aliases: [hg]
