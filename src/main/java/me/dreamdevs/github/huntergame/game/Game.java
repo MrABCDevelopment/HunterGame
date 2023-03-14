@@ -5,11 +5,9 @@ import lombok.Setter;
 import me.dreamdevs.github.huntergame.HunterGameMain;
 import me.dreamdevs.github.huntergame.api.events.HGWinGameEvent;
 import me.dreamdevs.github.huntergame.utils.ColourUtil;
+import me.dreamdevs.github.huntergame.utils.Util;
 import org.bukkit.*;
-import org.bukkit.entity.Chicken;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -23,7 +21,9 @@ import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -41,13 +41,16 @@ public class Game extends BukkitRunnable implements Listener {
     private int maxPlayers;
     private int goal;
     private int time;
+    private GameType gameType;
     private Location startSpawnLocation;
+    private Map<String, Location> mobsLocations;
     private List<Location> mobsSpawnLocations;
     private Scoreboard scoreboard;
     private Objective objective;
     private GameState gameState;
     private Map<Player, Integer> players;
 
+    private File file;
     private String winner;
 
     public Game(String id) {
@@ -55,6 +58,7 @@ public class Game extends BukkitRunnable implements Listener {
         this.gameState = GameState.WAITING;
         players = new ConcurrentHashMap<>();
         mobsSpawnLocations = new ArrayList<>();
+        mobsLocations = new HashMap<>();
         ItemMeta itemMeta = SWORD.getItemMeta();
         itemMeta.setUnbreakable(true);
         SWORD.setItemMeta(itemMeta);
@@ -68,6 +72,7 @@ public class Game extends BukkitRunnable implements Listener {
 
     public void restartAllSettings() {
         cancel();
+
         startGame();
     }
 
@@ -98,6 +103,7 @@ public class Game extends BukkitRunnable implements Listener {
                 return;
             }
             if(time == 0) {
+                spawnAnimals();
                 gameState = GameState.RUNNING;
                 players.keySet().forEach(player -> {
                     player.sendTitle(ColourUtil.colorize("&6&lGOOD LUCK!"), ColourUtil.colorize("&aGame has started!"), 10, 20, 10);
@@ -112,7 +118,6 @@ public class Game extends BukkitRunnable implements Listener {
             objective.getScore(TIME).setScore(time);
             players.forEach((player, integer) -> objective.getScore(player.getName()+": ").setScore(integer));
             if(time > 0) {
-                spawnAnimals(EntityType.CHICKEN, "&aChicken &a&l+1");
                 time--;
             } else {
                 gameState = GameState.ENDING;
@@ -139,22 +144,23 @@ public class Game extends BukkitRunnable implements Listener {
 
     @EventHandler
     public void killEntity(EntityDeathEvent event) {
-        if(event.getEntity().getType() == EntityType.CHICKEN) {
+        if(event.getEntity().getKiller() != null && (event.getEntity() instanceof Chicken ||
+                event.getEntity() instanceof Cow || event.getEntity() instanceof Pig)) {
             event.setDroppedExp(0);
             event.getDrops().clear();
-            updateStatsAndScoreboard(event.getEntity().getKiller(), 1);
+            if(event.getEntity().getCustomName().equalsIgnoreCase(ColourUtil.colorize("&a&l+1")))
+                updateStatsAndScoreboard(event.getEntity().getKiller(), 1);
+            else if(event.getEntity().getCustomName().equalsIgnoreCase(ColourUtil.colorize("&d&l-50%")))
+                updateStatsAndScoreboard(event.getEntity().getKiller(), -(players.get(event.getEntity().getKiller())/2));
         }
-    }
 
-    @EventHandler
-    public void dropEvent(PlayerDropItemEvent event) {
-        event.setCancelled(true);
     }
 
     @EventHandler
     public void damageEvent(EntityDamageByEntityEvent event) {
         if(event.getDamager() instanceof Player && event.getEntity() instanceof Player) {
-            event.setCancelled(true);
+            if(gameType == GameType.CLASSIC)
+                event.setCancelled(true);
         }
     }
 
@@ -177,12 +183,18 @@ public class Game extends BukkitRunnable implements Listener {
         }
     }
 
-    private void spawnAnimals(EntityType entityType, String displayName) {
-        getMobsSpawnLocations().forEach(location -> {
-            Chicken chicken = (Chicken) location.getWorld().spawnEntity(location, entityType);
-            chicken.setCustomName(ColourUtil.colorize(displayName));
-            chicken.setCustomNameVisible(true);
-        });
+    private void spawnAnimals() {
+        Bukkit.getScheduler().runTaskTimer(HunterGameMain.getInstance(), () -> getMobsLocations().forEach((key, value) -> {
+            if(time == 0)
+                cancel();
+            Entity entity = startSpawnLocation.getWorld().spawnEntity(value, EntityType.valueOf(key.toUpperCase()));
+            if (Util.chance(0.11)) {
+                entity.setCustomName(ColourUtil.colorize("&d&l-50%"));
+            } else {
+                entity.setCustomName(ColourUtil.colorize("&a&l+1"));
+            }
+            entity.setCustomNameVisible(true);
+        }), 20L, 40L);
     }
 
 }

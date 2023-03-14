@@ -1,7 +1,8 @@
-package me.dreamdevs.github.huntergame;
+package me.dreamdevs.github.huntergame.game;
 
 import lombok.Getter;
 import lombok.Setter;
+import me.dreamdevs.github.huntergame.HunterGameMain;
 import me.dreamdevs.github.huntergame.utils.ColourUtil;
 import me.dreamdevs.github.huntergame.utils.Util;
 import org.bukkit.Location;

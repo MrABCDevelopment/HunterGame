@@ -2,8 +2,11 @@ package me.dreamdevs.github.huntergame.managers;
 
 import lombok.Getter;
 import me.dreamdevs.github.huntergame.HunterGameMain;
+import me.dreamdevs.github.huntergame.api.events.HGJoinGameEvent;
+import me.dreamdevs.github.huntergame.api.events.HGLeaveGameEvent;
 import me.dreamdevs.github.huntergame.game.Game;
 import me.dreamdevs.github.huntergame.game.GameState;
+import me.dreamdevs.github.huntergame.game.GameType;
 import me.dreamdevs.github.huntergame.utils.CustomItem;
 import me.dreamdevs.github.huntergame.utils.Util;
 import org.bukkit.Bukkit;
@@ -15,7 +18,9 @@ import org.bukkit.entity.Player;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Getter
 public class GameManager {
@@ -30,22 +35,7 @@ public class GameManager {
         if(file.listFiles().length == 0)
             return;
         for(File f : file.listFiles()) {
-            String fileName = f.getName();
-            YamlConfiguration configuration = YamlConfiguration.loadConfiguration(f);
-            fileName = fileName.substring(0, fileName.length()-4);
-            Game game = new Game(fileName);
-            game.setStartSpawnLocation(Util.getStringLocation(configuration.getString("GameSettings.StartLocation"), true));
-            game.setMinPlayers(configuration.getInt("GameSettings.MinPlayers"));
-            game.setMaxPlayers(configuration.getInt("GameSettings.MaxPlayers"));
-            game.setGoal(configuration.getInt("GameSettings.Goal"));
-            game.setTime(configuration.getInt("GameSettings.Time"));
-            List<Location> locations = new ArrayList<>();
-            for(String s : configuration.getStringList("GameSettings.MobsSpawnsLocations")) {
-                locations.add(Util.getStringLocation(s, true));
-            }
-            game.setMobsSpawnLocations(locations);
-            game.startGame();
-            games.add(game);
+            loadGame(f);
         }
     }
 
@@ -67,6 +57,8 @@ public class GameManager {
         player.getInventory().clear();
         player.getInventory().setItem(8, CustomItem.LEAVE.toItemStack());
         game.getPlayers().put(player, 0);
+        HGJoinGameEvent event = new HGJoinGameEvent(player, game);
+        Bukkit.getPluginManager().callEvent(event);
     }
 
     public void leaveGame(Player player, Game game) {
@@ -78,37 +70,70 @@ public class GameManager {
         player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
         HunterGameMain.getInstance().getPlayerManager().sendToLobby(player);
         HunterGameMain.getInstance().getPlayerManager().loadLobby(player);
+        HGLeaveGameEvent event = new HGLeaveGameEvent(player, game);
+        Bukkit.getPluginManager().callEvent(event);
+    }
+
+    public void stop(Game game) {
+        game.cancel();
+        games.remove(game);
+    }
+
+    public void loadGame(File file) {
+        String fileName = file.getName();
+        YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
+        fileName = fileName.substring(0, fileName.length()-4);
+        Game game = new Game(fileName);
+        game.setFile(file);
+        game.setStartSpawnLocation(Util.getStringLocation(configuration.getString("GameSettings.StartLocation"), true));
+        game.setMinPlayers(configuration.getInt("GameSettings.MinPlayers"));
+        game.setMaxPlayers(configuration.getInt("GameSettings.MaxPlayers"));
+        game.setGoal(configuration.getInt("GameSettings.Goal"));
+        game.setTime(configuration.getInt("GameSettings.Time"));
+        game.setGameType(GameType.valueOf(configuration.getString("GameSettings.Type".toUpperCase(), "CLASSIC")));
+        Map<String, Location> map = new HashMap<>();
+        for(String s : configuration.getStringList("GameSettings.MobsSpawnsLocations")) {
+            String[] strings = s.split(";");
+            map.put(strings[0], Util.getStringLocation(strings[1], true));
+        }
+        game.setMobsLocations(map);
+        game.startGame();
+        games.add(game);
+    }
+
+    public void saveGame(Game game) {
+        String fileName = game.getId()+".yml";
+        File f = new File(HunterGameMain.getInstance().getDataFolder(), "arenas/"+fileName);
+        if(!f.exists()) {
+            try {
+                f.createNewFile();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        YamlConfiguration configuration = YamlConfiguration.loadConfiguration(f);
+        configuration.set("GameSettings.Goal", game.getGoal());
+        configuration.set("GameSettings.Time", game.getTime());
+        configuration.set("GameSettings.MinPlayers", game.getMinPlayers());
+        configuration.set("GameSettings.MaxPlayers", game.getMaxPlayers());
+        configuration.set("GameSettings.StartLocation", Util.getLocationString(game.getStartSpawnLocation(), true));
+        configuration.set("GameSettings.Type", game.getGameType().name());
+        List<String> locations = new ArrayList<>();
+        for(Map.Entry<String, Location> maps : game.getMobsLocations().entrySet()) {
+            String line = maps.getKey()+";"+Util.getLocationString(maps.getValue(), true);
+            locations.add(line);
+        }
+        configuration.set("GameSettings.MobsSpawnsLocations", locations);
+        try {
+            configuration.save(f);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void saveGames() {
         if(!games.isEmpty()) {
-            games.stream().forEachOrdered(game -> {
-                String fileName = game.getId()+".yml";
-                File f = new File(HunterGameMain.getInstance().getDataFolder(), "arenas/"+fileName);
-                if(!f.exists()) {
-                    try {
-                        f.createNewFile();
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-                YamlConfiguration configuration = YamlConfiguration.loadConfiguration(f);
-                configuration.set("GameSettings.Goal", game.getGoal());
-                configuration.set("GameSettings.Time", game.getTime());
-                configuration.set("GameSettings.MinPlayers", game.getMinPlayers());
-                configuration.set("GameSettings.MaxPlayers", game.getMaxPlayers());
-                configuration.set("GameSettings.StartLocation", Util.getLocationString(game.getStartSpawnLocation(), true));
-                List<String> locations = new ArrayList<>();
-                for(Location l : game.getMobsSpawnLocations()) {
-                    locations.add(Util.getLocationString(l, true));
-                }
-                configuration.set("GameSettings.MobsSpawnsLocations", locations);
-                try {
-                    configuration.save(f);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            });
+            games.forEach(this::saveGame);
         }
     }
 

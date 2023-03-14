@@ -9,12 +9,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.util.StringUtil;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 @Getter
 public class GUI implements InventoryHolder {
@@ -35,18 +29,6 @@ public class GUI implements InventoryHolder {
     public void openGUI(Player player) {
         InventoryListener.guis.put(player.getUniqueId(), this);
         player.openInventory(inventory);
-    }
-
-    public void update(Player player, Game game) {
-        inventory.clear();
-        Bukkit.getScheduler().runTaskLater(HunterGameMain.getInstance(), () -> {
-            for(int x = 0; x<itemStacks.length; x++) {
-                if(itemStacks[x] != null) {
-                    setItem(x, itemStacks[x]);
-                }
-            }
-        }, 2L);
-        player.updateInventory();
     }
 
     public void setItem(int slot, GItem gItem) {

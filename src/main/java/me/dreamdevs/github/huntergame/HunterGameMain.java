@@ -2,6 +2,7 @@ package me.dreamdevs.github.huntergame;
 
 import lombok.Getter;
 import me.dreamdevs.github.huntergame.commands.CommandHandler;
+import me.dreamdevs.github.huntergame.game.Lobby;
 import me.dreamdevs.github.huntergame.listeners.InventoryListener;
 import me.dreamdevs.github.huntergame.listeners.PlayerInteractListener;
 import me.dreamdevs.github.huntergame.listeners.PlayerListeners;

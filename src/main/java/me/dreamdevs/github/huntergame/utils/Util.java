@@ -2,7 +2,6 @@ package me.dreamdevs.github.huntergame.utils;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.inventory.ItemStack;
 
 public class Util {
 
@@ -41,5 +40,8 @@ public class Util {
         Bukkit.getConsoleSender().sendMessage(ColourUtil.colorize(message));
     }
 
+    public static boolean chance(double chance) {
+        return Math.random() < chance;
+    }
 
 }

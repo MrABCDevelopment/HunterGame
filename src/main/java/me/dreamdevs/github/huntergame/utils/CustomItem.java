@@ -15,9 +15,6 @@ public enum CustomItem {
             HunterGameMain.getInstance().getConfig().getStringList("items.arena-selector.Lore")),
     INFO_BOOK(Material.BOOK, HunterGameMain.getInstance().getConfig().getString("items.how-to-play.DisplayName"),
             HunterGameMain.getInstance().getConfig().getStringList("items.how-to-play.Lore")),
-
-    // STATS(Material.FEATHER, HunterGameMain.getInstance().getConfig().getString("items.stats.DisplayName"),
-    //        HunterGameMain.getInstance().getConfig().getStringList("items.stats.Lore")),
     LEAVE(Material.RED_BED, HunterGameMain.getInstance().getConfig().getString("items.leave.DisplayName"),
             HunterGameMain.getInstance().getConfig().getStringList("items.leave.Lore"));
 
