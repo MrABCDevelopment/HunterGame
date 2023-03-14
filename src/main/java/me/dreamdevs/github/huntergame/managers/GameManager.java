@@ -89,12 +89,13 @@ public class GameManager {
         game.setMinPlayers(configuration.getInt("GameSettings.MinPlayers"));
         game.setMaxPlayers(configuration.getInt("GameSettings.MaxPlayers"));
         game.setGoal(configuration.getInt("GameSettings.Goal"));
-        game.setTime(configuration.getInt("GameSettings.Time"));
-        game.setGameType(GameType.valueOf(configuration.getString("GameSettings.Type".toUpperCase(), "CLASSIC")));
-        Map<String, Location> map = new HashMap<>();
+        game.setGameTime(configuration.getInt("GameSettings.Time"));
+        game.setSpawnMobsTime(configuration.getInt("GameSettings.SpawnMobsTime"));
+        game.setGameType(GameType.valueOf(configuration.getString("GameSettings.Type").toUpperCase()));
+        Map<Location, String> map = new HashMap<>();
         for(String s : configuration.getStringList("GameSettings.MobsSpawnsLocations")) {
             String[] strings = s.split(";");
-            map.put(strings[0], Util.getStringLocation(strings[1], true));
+            map.put(Util.getStringLocation(strings[1], true), strings[0]);
         }
         game.setMobsLocations(map);
         game.startGame();
@@ -113,14 +114,15 @@ public class GameManager {
         }
         YamlConfiguration configuration = YamlConfiguration.loadConfiguration(f);
         configuration.set("GameSettings.Goal", game.getGoal());
-        configuration.set("GameSettings.Time", game.getTime());
+        configuration.set("GameSettings.Time", game.getGameTime());
         configuration.set("GameSettings.MinPlayers", game.getMinPlayers());
         configuration.set("GameSettings.MaxPlayers", game.getMaxPlayers());
+        configuration.set("GameSettings.SpawnMobsTime", game.getSpawnMobsTime());
         configuration.set("GameSettings.StartLocation", Util.getLocationString(game.getStartSpawnLocation(), true));
         configuration.set("GameSettings.Type", game.getGameType().name());
         List<String> locations = new ArrayList<>();
-        for(Map.Entry<String, Location> maps : game.getMobsLocations().entrySet()) {
-            String line = maps.getKey()+";"+Util.getLocationString(maps.getValue(), true);
+        for(Map.Entry<Location, String> maps : game.getMobsLocations().entrySet()) {
+            String line = maps.getValue()+";"+Util.getLocationString(maps.getKey(), true);
             locations.add(line);
         }
         configuration.set("GameSettings.MobsSpawnsLocations", locations);

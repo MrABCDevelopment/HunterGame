@@ -8,6 +8,7 @@ import me.dreamdevs.github.huntergame.listeners.PlayerInteractListener;
 import me.dreamdevs.github.huntergame.listeners.PlayerListeners;
 import me.dreamdevs.github.huntergame.managers.CooldownManager;
 import me.dreamdevs.github.huntergame.managers.GameManager;
+import me.dreamdevs.github.huntergame.managers.MessagesManager;
 import me.dreamdevs.github.huntergame.managers.PlayerManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -21,6 +22,7 @@ public class HunterGameMain extends JavaPlugin {
     private CooldownManager cooldownManager;
     private GameManager gameManager;
     private Lobby lobby;
+    private MessagesManager messagesManager;
 
     public static List<String> MESSAGE;
 
@@ -34,10 +36,13 @@ public class HunterGameMain extends JavaPlugin {
 
         MESSAGE = getConfig().getStringList("items.how-to-play.Message");
 
+
         this.lobby = new Lobby();
+        this.messagesManager = new MessagesManager(this);
         this.cooldownManager = new CooldownManager();
         this.playerManager = new PlayerManager();
         this.gameManager = new GameManager();
+
 
         new CommandHandler(this);
 

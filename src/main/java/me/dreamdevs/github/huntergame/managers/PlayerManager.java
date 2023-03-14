@@ -10,7 +10,6 @@ public class PlayerManager {
 
     public void loadLobby(Player player) {
         player.getInventory().setItem(4, CustomItem.ARENA_SELECTOR.toItemStack());
-        //player.getInventory().setItem(3, CustomItem.STATS.toItemStack());
         player.getInventory().setItem(0, CustomItem.INFO_BOOK.toItemStack());
     }
 

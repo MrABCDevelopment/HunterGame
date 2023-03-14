@@ -40,11 +40,12 @@ public class Game extends BukkitRunnable implements Listener {
     private int minPlayers;
     private int maxPlayers;
     private int goal;
-    private int time;
+    private int gameTime;
+    private int timer;
+    private int spawnMobsTime;
     private GameType gameType;
     private Location startSpawnLocation;
-    private Map<String, Location> mobsLocations;
-    private List<Location> mobsSpawnLocations;
+    private Map<Location, String> mobsLocations;
     private Scoreboard scoreboard;
     private Objective objective;
     private GameState gameState;
@@ -57,7 +58,6 @@ public class Game extends BukkitRunnable implements Listener {
         this.id = id;
         this.gameState = GameState.WAITING;
         players = new ConcurrentHashMap<>();
-        mobsSpawnLocations = new ArrayList<>();
         mobsLocations = new HashMap<>();
         ItemMeta itemMeta = SWORD.getItemMeta();
         itemMeta.setUnbreakable(true);
@@ -68,12 +68,6 @@ public class Game extends BukkitRunnable implements Listener {
     public void startGame() {
         setupScoreboard();
         runTaskTimer(HunterGameMain.getInstance(), 20L, 20L);
-    }
-
-    public void restartAllSettings() {
-        cancel();
-
-        startGame();
     }
 
     private void setupScoreboard() {
@@ -89,52 +83,63 @@ public class Game extends BukkitRunnable implements Listener {
     public void run() {
         if(gameState == GameState.WAITING) {
             if(players.isEmpty()) return;
-            players.forEach((player, integer) -> player.sendTitle("", ColourUtil.colorize("&8Waiting..."), 0, 25, 25));
+            players.forEach((player, integer) -> player.sendTitle("", HunterGameMain.getInstance().getMessagesManager().getMessages().get("title-waiting-game").replace("{CURRENT}", String.valueOf(players.size())).replace("{REQUIRE}", String.valueOf(minPlayers)), 0, 25, 25));
             if(players.size() >= minPlayers) {
-                time = 30;
+                timer = 30;
                 gameState = GameState.STARTING;
             }
             return;
         }
         if(gameState == GameState.STARTING) {
-            players.forEach((player, integer) -> player.sendTitle("", ColourUtil.colorize("&aStarting in "+time+" seconds..."), 0, 25, 25));
+            players.forEach((player, integer) -> player.sendTitle("", HunterGameMain.getInstance().getMessagesManager().getMessages().get("title-starting-game").replace("{TIME}", String.valueOf(timer)), 0, 25, 25));
             if(players.size() < minPlayers) {
                 gameState = GameState.WAITING;
                 return;
             }
-            if(time == 0) {
+            if(timer == 0) {
                 spawnAnimals();
                 gameState = GameState.RUNNING;
                 players.keySet().forEach(player -> {
-                    player.sendTitle(ColourUtil.colorize("&6&lGOOD LUCK!"), ColourUtil.colorize("&aGame has started!"), 10, 20, 10);
+                    player.sendTitle(HunterGameMain.getInstance().getMessagesManager().getMessages().get("title-started-game"), HunterGameMain.getInstance().getMessagesManager().getMessages().get("subtitle-started-game"), 10, 20, 10);
                     player.getInventory().clear();
                     player.getInventory().setItem(0, SWORD);
                 });
-                time = 120;
+                timer = gameTime;
             }
-            time--;
+            timer--;
         }
         if(gameState == GameState.RUNNING) {
-            objective.getScore(TIME).setScore(time);
+            objective.getScore(TIME).setScore(timer);
             players.forEach((player, integer) -> objective.getScore(player.getName()+": ").setScore(integer));
-            if(time > 0) {
-                time--;
+            if(timer > 0) {
+                timer--;
             } else {
+                Player player = players.keySet().stream().findFirst().get();
+                for(Map.Entry<Player, Integer> entry : getPlayers().entrySet()) {
+                    if(players.get(player) < entry.getValue()) {
+                        player = entry.getKey();
+                    }
+                }
+                winner = player.getName();
+                HGWinGameEvent hgWinGameEvent = new HGWinGameEvent(player, this);
+                Bukkit.getPluginManager().callEvent(hgWinGameEvent);
                 gameState = GameState.ENDING;
             }
         }
         if(gameState == GameState.ENDING) {
-            startSpawnLocation.getWorld().getEntities().stream().filter(entity -> entity.getType() == EntityType.CHICKEN).forEachOrdered(Entity::remove);
-            time--;
-            if(time>0) {
-                players.forEach((player, integer) -> player.sendTitle("", ColourUtil.colorize("&a"+winner+" has won this game!"), 0, 25, 25));
+            startSpawnLocation.getWorld().getEntities().stream().filter(entity -> (entity.getType() == EntityType.CHICKEN
+                    || entity.getType() == EntityType.PIG
+                    || entity.getType() == EntityType.COW)).forEachOrdered(Entity::remove);
+            timer--;
+            if(timer>0) {
+                players.forEach((player, integer) -> player.sendTitle("", HunterGameMain.getInstance().getMessagesManager().getMessages().get("title-won-player").replace("{WINNER}", winner), 0, 25, 25));
             } else {
                 gameState = GameState.RESTARTING;
             }
         }
         if(gameState == GameState.RESTARTING) {
             for(Map.Entry<Player, Integer> entry : players.entrySet()) {
-                entry.getKey().sendMessage(ChatColor.RED+"The game has stopped!");
+                entry.getKey().sendMessage(HunterGameMain.getInstance().getMessagesManager().getMessages().get("game-stopped"));
                 HunterGameMain.getInstance().getGameManager().leaveGame(entry.getKey(), this);
             }
             setupScoreboard();
@@ -144,6 +149,11 @@ public class Game extends BukkitRunnable implements Listener {
 
     @EventHandler
     public void killEntity(EntityDeathEvent event) {
+        if(event.getEntity() instanceof Player && event.getEntity().getKiller() != null && event.getEntity().getKiller() instanceof Player) {
+            event.getDrops().clear();
+            event.setDroppedExp(0);
+        }
+
         if(event.getEntity().getKiller() != null && (event.getEntity() instanceof Chicken ||
                 event.getEntity() instanceof Cow || event.getEntity() instanceof Pig)) {
             event.setDroppedExp(0);
@@ -159,8 +169,15 @@ public class Game extends BukkitRunnable implements Listener {
     @EventHandler
     public void damageEvent(EntityDamageByEntityEvent event) {
         if(event.getDamager() instanceof Player && event.getEntity() instanceof Player) {
-            if(gameType == GameType.CLASSIC)
+            if(gameType == GameType.CLASSIC || gameState == GameState.WAITING || gameState == GameState.ENDING || gameState == GameState.STARTING)
                 event.setCancelled(true);
+            else
+                if(gameType == GameType.PVP) {
+                    if(((Player) event.getEntity()).getHealth() <= 4.0) {
+                        ((Player) event.getEntity()).setHealth(20);
+                        event.getEntity().teleport(startSpawnLocation);
+                    }
+                }
         }
     }
 
@@ -174,7 +191,7 @@ public class Game extends BukkitRunnable implements Listener {
         players.put(player, players.get(player)+score);
         objective.getScore(player.getName()+": ").setScore(players.get(player));
         if(players.get(player) == goal) {
-            time = 10;
+            timer = 10;
             players.keySet().forEach(p -> p.getInventory().clear());
             gameState = GameState.ENDING;
             winner = player.getDisplayName();
@@ -185,16 +202,16 @@ public class Game extends BukkitRunnable implements Listener {
 
     private void spawnAnimals() {
         Bukkit.getScheduler().runTaskTimer(HunterGameMain.getInstance(), () -> getMobsLocations().forEach((key, value) -> {
-            if(time == 0)
+            if(gameState == GameState.ENDING)
                 cancel();
-            Entity entity = startSpawnLocation.getWorld().spawnEntity(value, EntityType.valueOf(key.toUpperCase()));
+            Entity entity = startSpawnLocation.getWorld().spawnEntity(key, EntityType.valueOf(value.toUpperCase()));
             if (Util.chance(0.11)) {
                 entity.setCustomName(ColourUtil.colorize("&d&l-50%"));
             } else {
                 entity.setCustomName(ColourUtil.colorize("&a&l+1"));
             }
             entity.setCustomNameVisible(true);
-        }), 20L, 40L);
+        }), 20L, spawnMobsTime*20L);
     }
 
 }

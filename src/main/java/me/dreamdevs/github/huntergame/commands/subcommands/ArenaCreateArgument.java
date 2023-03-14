@@ -4,6 +4,7 @@ import me.dreamdevs.github.huntergame.HunterGameMain;
 import me.dreamdevs.github.huntergame.commands.ArgumentCommand;
 import me.dreamdevs.github.huntergame.game.Game;
 import me.dreamdevs.github.huntergame.game.GameState;
+import me.dreamdevs.github.huntergame.game.GameType;
 import me.dreamdevs.github.huntergame.utils.ColourUtil;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -17,14 +18,17 @@ public class ArenaCreateArgument implements ArgumentCommand {
             return true;
         }
         Game game = new Game(args[1]);
-        game.setTime(120);
+        game.setGameTime(50);
         game.setMaxPlayers(8);
         game.setMinPlayers(2);
         game.setGameState(GameState.WAITING);
+        game.setGoal(30);
+        game.setSpawnMobsTime(3);
+        game.setGameType(GameType.CLASSIC);
         game.setStartSpawnLocation(((Player)commandSender).getLocation());
-        game.getMobsSpawnLocations().add(((Player)commandSender).getLocation());
         HunterGameMain.getInstance().getGameManager().getGames().add(game);
         game.startGame();
+        HunterGameMain.getInstance().getGameManager().saveGame(game);
         commandSender.sendMessage(ColourUtil.colorize("&aYou created new arena with ID: "+game.getId()+"!"));
         return true;
     }
