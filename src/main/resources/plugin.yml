@@ -5,4 +5,5 @@ api-version: 1.13
 
 commands:
   huntergame:
+    description: HunterGame commands to configure server
     aliases: [hg]
