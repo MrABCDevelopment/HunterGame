@@ -80,6 +80,13 @@ public class GameManager {
     }
 
     public void loadGame(File file) {
+        if(!file.exists()) {
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
         String fileName = file.getName();
         YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
         fileName = fileName.substring(0, fileName.length()-4);

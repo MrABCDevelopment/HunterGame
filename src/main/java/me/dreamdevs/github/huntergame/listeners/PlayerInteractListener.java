@@ -51,6 +51,7 @@ public class PlayerInteractListener implements Listener {
                     player.sendMessage(ChatColor.RED+"There are no arenas!");
                     return;
                 }
+                player.playSound(player.getLocation(), Sound.BLOCK_CHEST_OPEN, 1f, (float) Math.random());
                 GUI gui = new GUI(HunterGameMain.getInstance().getConfig().getString("items.arena-selector.DisplayName"), GUISize.SIX_ROWS);
                 AtomicInteger atomicInteger = new AtomicInteger(0);
                 HunterGameMain.getInstance().getGameManager().getGames().forEach(game -> {

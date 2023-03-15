@@ -17,14 +17,13 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -50,6 +49,7 @@ public class Game extends BukkitRunnable implements Listener {
     private Objective objective;
     private GameState gameState;
     private Map<Player, Integer> players;
+    private BukkitTask animalTask;
 
     private File file;
     private String winner;
@@ -123,10 +123,12 @@ public class Game extends BukkitRunnable implements Listener {
                 winner = player.getName();
                 HGWinGameEvent hgWinGameEvent = new HGWinGameEvent(player, this);
                 Bukkit.getPluginManager().callEvent(hgWinGameEvent);
+                timer = 10;
                 gameState = GameState.ENDING;
             }
         }
         if(gameState == GameState.ENDING) {
+            animalTask.cancel();
             startSpawnLocation.getWorld().getEntities().stream().filter(entity -> (entity.getType() == EntityType.CHICKEN
                     || entity.getType() == EntityType.PIG
                     || entity.getType() == EntityType.COW)).forEachOrdered(Entity::remove);
@@ -191,19 +193,17 @@ public class Game extends BukkitRunnable implements Listener {
         players.put(player, players.get(player)+score);
         objective.getScore(player.getName()+": ").setScore(players.get(player));
         if(players.get(player) == goal) {
-            timer = 10;
             players.keySet().forEach(p -> p.getInventory().clear());
-            gameState = GameState.ENDING;
             winner = player.getDisplayName();
             HGWinGameEvent hgWinGameEvent = new HGWinGameEvent(player, this);
             Bukkit.getPluginManager().callEvent(hgWinGameEvent);
+            timer = 10;
+            gameState = GameState.ENDING;
         }
     }
 
     private void spawnAnimals() {
-        Bukkit.getScheduler().runTaskTimer(HunterGameMain.getInstance(), () -> getMobsLocations().forEach((key, value) -> {
-            if(gameState == GameState.ENDING)
-                cancel();
+        animalTask = Bukkit.getScheduler().runTaskTimer(HunterGameMain.getInstance(), () -> getMobsLocations().forEach((key, value) -> {
             Entity entity = startSpawnLocation.getWorld().spawnEntity(key, EntityType.valueOf(value.toUpperCase()));
             if (Util.chance(0.11)) {
                 entity.setCustomName(ColourUtil.colorize("&d&l-50%"));
