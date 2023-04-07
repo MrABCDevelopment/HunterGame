@@ -1,3 +1,26 @@
+update-checker: true
+
+# All placeholders in WaitingScoreboard: {TIME}, {MAX}, {GOAL}, {CURRENT}
+# All placeholders in GameScoreboard: {TIME}, {MAX}, {GOAL}, {CURRENT}
+
+GlobalGameSettings:
+  MinusAnimalChance: 0.11
+  Title: '&e&lHunterGame'
+  WaitingScoreboard:
+    - ''
+    - '&b&lPlayers: &f&l{CURRENT}/{MAX}'
+    - ''
+    - '&2&lGoal: &f&l{GOAL}'
+    - ''
+    - '&6&lwww.spigotmc.org'
+  GameScoreboard:
+    - ''
+    - '&a&lTime Left: &f&l{TIME}'
+    - ''
+    - '&3&lGoal: &f&l{GOAL}'
+    - ''
+    - '&6&lwww.spigotmc.org'
+
 messages:
   game-stopped: '&cThe game has stopped!'
   title-waiting-game: '&7Waiting for players... ({CURRENT}/{REQUIRE})'

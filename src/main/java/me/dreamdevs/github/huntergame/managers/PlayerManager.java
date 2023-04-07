@@ -2,9 +2,11 @@ package me.dreamdevs.github.huntergame.managers;
 
 import me.dreamdevs.github.huntergame.HunterGameMain;
 import me.dreamdevs.github.huntergame.utils.CustomItem;
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
 
 public class PlayerManager {
 
@@ -24,9 +26,10 @@ public class PlayerManager {
         player.setFoodLevel(20);
         player.setBedSpawnLocation(null);
         player.setExp(0);
+        player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
         player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(20);
         player.setHealth(20);
-        player.getActivePotionEffects().forEach(potionEffect -> player.removePotionEffect(potionEffect.getType()));
+        player.getActivePotionEffects().stream().map(PotionEffect::getType).forEach(player::removePotionEffect);
     }
 
 }

@@ -17,10 +17,7 @@ import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Getter
 public class GameManager {
@@ -52,7 +49,7 @@ public class GameManager {
             player.sendMessage(ChatColor.RED+"You are already in this arena!");
             return;
         }
-        player.setScoreboard(game.getScoreboard());
+        player.setScoreboard(game.getHunterBoard().getScoreboard());
         player.teleport(game.getStartSpawnLocation());
         player.getInventory().clear();
         player.getInventory().setItem(8, CustomItem.LEAVE.toItemStack());
@@ -66,10 +63,9 @@ public class GameManager {
             player.sendMessage(ChatColor.RED+"You are not in game!");
             return;
         }
-        game.getPlayers().remove(player);
-        player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
         HunterGameMain.getInstance().getPlayerManager().sendToLobby(player);
         HunterGameMain.getInstance().getPlayerManager().loadLobby(player);
+        game.getPlayers().remove(player);
         HGLeaveGameEvent event = new HGLeaveGameEvent(player, game);
         Bukkit.getPluginManager().callEvent(event);
     }
@@ -80,13 +76,7 @@ public class GameManager {
     }
 
     public void loadGame(File file) {
-        if(!file.exists()) {
-            try {
-                file.createNewFile();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
+        Util.createFile(file);
         String fileName = file.getName();
         YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
         fileName = fileName.substring(0, fileName.length()-4);
@@ -112,13 +102,8 @@ public class GameManager {
     public void saveGame(Game game) {
         String fileName = game.getId()+".yml";
         File f = new File(HunterGameMain.getInstance().getDataFolder(), "arenas/"+fileName);
-        if(!f.exists()) {
-            try {
-                f.createNewFile();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
+        Util.createFile(f);
+
         YamlConfiguration configuration = YamlConfiguration.loadConfiguration(f);
         configuration.set("GameSettings.Goal", game.getGoal());
         configuration.set("GameSettings.Time", game.getGameTime());
@@ -135,9 +120,7 @@ public class GameManager {
         configuration.set("GameSettings.MobsSpawnsLocations", locations);
         try {
             configuration.save(f);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        } catch (IOException e) { }
     }
 
     public void saveGames() {

@@ -11,13 +11,16 @@ import me.dreamdevs.github.huntergame.utils.ColourUtil;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.ClickType;
 
 import java.util.ArrayList;
 
 public class ArenaEditArgument implements ArgumentCommand {
     @Override
     public boolean execute(CommandSender commandSender, String[] args) {
+        if(!(commandSender instanceof Player)) {
+            commandSender.sendMessage(ColourUtil.colorize("&cConsole cannot perform this command!"));
+            return true;
+        }
         if(args.length <= 1) {
              commandSender.sendMessage(ColourUtil.colorize("&cToo little to set something!"));
              return true;
@@ -25,6 +28,10 @@ public class ArenaEditArgument implements ArgumentCommand {
         String id = args[1];
         Player player = (Player)commandSender;
         Game game = HunterGameMain.getInstance().getGameManager().getGames().stream().filter(g -> g.getId().equalsIgnoreCase(id)).findFirst().get();
+        if(game == null) {
+            player.sendMessage(ColourUtil.colorize("&cThere's no arena with this ID."));
+            return true;
+        }
         GUI gui = new GUI("Edit: "+game.getId(), GUISize.ONE_ROW);
 
         GItem time = new GItem(Material.CLOCK, "&aTime: {TIME}".replace("{TIME}", String.valueOf(game.getGameTime())), ColourUtil.colouredLore("", "&7Click to set the time."));

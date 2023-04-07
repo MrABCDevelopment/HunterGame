@@ -3,7 +3,17 @@ package me.dreamdevs.github.huntergame.utils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
+import java.io.File;
+
 public class Util {
+
+    public static void createFile(File file) {
+        if(!file.exists()) {
+            try {
+                file.createNewFile();
+            } catch (Exception e) { }
+        }
+    }
 
     public static Location getStringLocation(String location, boolean precised) {
         if(location == null) return null;

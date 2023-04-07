@@ -11,5 +11,6 @@ public enum GameType {
     /**
      * It's like classic version, but here, you can also kill other players!
      */
-    PVP;
+    PVP,
+
 }

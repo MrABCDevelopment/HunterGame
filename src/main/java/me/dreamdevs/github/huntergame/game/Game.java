@@ -4,23 +4,22 @@ import lombok.Getter;
 import lombok.Setter;
 import me.dreamdevs.github.huntergame.HunterGameMain;
 import me.dreamdevs.github.huntergame.api.events.HGWinGameEvent;
+import me.dreamdevs.github.huntergame.api.scoreboard.HunterBoard;
 import me.dreamdevs.github.huntergame.utils.ColourUtil;
 import me.dreamdevs.github.huntergame.utils.Util;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
-import org.bukkit.scoreboard.DisplaySlot;
-import org.bukkit.scoreboard.Objective;
-import org.bukkit.scoreboard.Scoreboard;
 
 import java.io.File;
 import java.util.HashMap;
@@ -30,9 +29,6 @@ import java.util.concurrent.ConcurrentHashMap;
 @Getter @Setter
 public class Game extends BukkitRunnable implements Listener {
 
-    private static final String HEADER = ColourUtil.colorize("  &a&lHunter&e&lGame  ");
-    private static final String TIME = ColourUtil.colorize("&cTime: ");
-    private static final String GOAL = ColourUtil.colorize("&cGoal: ");
     private static final ItemStack SWORD = new ItemStack(Material.IRON_SWORD);
 
     private String id;
@@ -45,8 +41,6 @@ public class Game extends BukkitRunnable implements Listener {
     private GameType gameType;
     private Location startSpawnLocation;
     private Map<Location, String> mobsLocations;
-    private Scoreboard scoreboard;
-    private Objective objective;
     private GameState gameState;
     private Map<Player, Integer> players;
     private BukkitTask animalTask;
@@ -54,11 +48,16 @@ public class Game extends BukkitRunnable implements Listener {
     private File file;
     private String winner;
 
+    private HunterBoard hunterBoard;
+
     public Game(String id) {
         this.id = id;
         this.gameState = GameState.WAITING;
-        players = new ConcurrentHashMap<>();
+        this.players = new ConcurrentHashMap<>();
         mobsLocations = new HashMap<>();
+
+        this.hunterBoard = new HunterBoard(this);
+
         ItemMeta itemMeta = SWORD.getItemMeta();
         itemMeta.setUnbreakable(true);
         SWORD.setItemMeta(itemMeta);
@@ -66,21 +65,12 @@ public class Game extends BukkitRunnable implements Listener {
     }
 
     public void startGame() {
-        setupScoreboard();
         runTaskTimer(HunterGameMain.getInstance(), 20L, 20L);
-    }
-
-    private void setupScoreboard() {
-        this.scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
-        this.objective = scoreboard.registerNewObjective("arenaboard", "ab-"+id);
-        scoreboard.clearSlot(DisplaySlot.SIDEBAR);
-        objective.setDisplaySlot(DisplaySlot.SIDEBAR);
-        objective.setDisplayName(HEADER);
-        objective.getScore(GOAL).setScore(goal);
     }
 
     @Override
     public void run() {
+        hunterBoard.update(gameState);
         if(gameState == GameState.WAITING) {
             if(players.isEmpty()) return;
             players.forEach((player, integer) -> player.sendTitle("", HunterGameMain.getInstance().getMessagesManager().getMessages().get("title-waiting-game").replace("{CURRENT}", String.valueOf(players.size())).replace("{REQUIRE}", String.valueOf(minPlayers)), 0, 25, 25));
@@ -104,23 +94,19 @@ public class Game extends BukkitRunnable implements Listener {
                     player.getInventory().clear();
                     player.getInventory().setItem(0, SWORD);
                 });
+                hunterBoard.update(gameState);
                 timer = gameTime;
             }
             timer--;
         }
         if(gameState == GameState.RUNNING) {
-            objective.getScore(TIME).setScore(timer);
-            players.forEach((player, integer) -> objective.getScore(player.getName()+": ").setScore(integer));
             if(timer > 0) {
+                players.keySet().forEach(player -> player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ColourUtil.colorize("&6Your place: "+getPlace(player)))));
                 timer--;
             } else {
-                Player player = players.keySet().stream().findFirst().get();
-                for(Map.Entry<Player, Integer> entry : getPlayers().entrySet()) {
-                    if(players.get(player) < entry.getValue()) {
-                        player = entry.getKey();
-                    }
-                }
-                winner = player.getName();
+                winner = getWinner();
+                Player player = Bukkit.getPlayer(winner);
+
                 HGWinGameEvent hgWinGameEvent = new HGWinGameEvent(player, this);
                 Bukkit.getPluginManager().callEvent(hgWinGameEvent);
                 timer = 10;
@@ -144,28 +130,27 @@ public class Game extends BukkitRunnable implements Listener {
                 entry.getKey().sendMessage(HunterGameMain.getInstance().getMessagesManager().getMessages().get("game-stopped"));
                 HunterGameMain.getInstance().getGameManager().leaveGame(entry.getKey(), this);
             }
-            setupScoreboard();
+            hunterBoard.restore();
             gameState = GameState.WAITING;
         }
     }
 
     @EventHandler
     public void killEntity(EntityDeathEvent event) {
-        if(event.getEntity() instanceof Player && event.getEntity().getKiller() != null && event.getEntity().getKiller() instanceof Player) {
-            event.getDrops().clear();
-            event.setDroppedExp(0);
-        }
+        event.getDrops().clear();
+        event.setDroppedExp(0);
 
-        if(event.getEntity().getKiller() != null && (event.getEntity() instanceof Chicken ||
-                event.getEntity() instanceof Cow || event.getEntity() instanceof Pig)) {
-            event.setDroppedExp(0);
-            event.getDrops().clear();
-            if(event.getEntity().getCustomName().equalsIgnoreCase(ColourUtil.colorize("&a&l+1")))
-                updateStatsAndScoreboard(event.getEntity().getKiller(), 1);
-            else if(event.getEntity().getCustomName().equalsIgnoreCase(ColourUtil.colorize("&d&l-50%")))
-                updateStatsAndScoreboard(event.getEntity().getKiller(), -(players.get(event.getEntity().getKiller())/2));
-        }
+        if(gameState == GameState.WAITING || players.isEmpty() || gameState == GameState.STARTING || !players.containsKey(event.getEntity().getKiller())) return;
 
+        if(gameState == GameState.RUNNING) {
+            if (event.getEntity().getKiller() != null && (event.getEntity() instanceof Chicken ||
+                    event.getEntity() instanceof Cow || event.getEntity() instanceof Pig)) {
+                if (event.getEntity().getCustomName().equalsIgnoreCase(ColourUtil.colorize("&a&l+1")))
+                    updateStatsAndScoreboard(event.getEntity().getKiller(), 1);
+                else if (event.getEntity().getCustomName().equalsIgnoreCase(ColourUtil.colorize("&d&l-50%")))
+                    updateStatsAndScoreboard(event.getEntity().getKiller(), -(players.get(event.getEntity().getKiller()) / 2));
+            }
+        }
     }
 
     @EventHandler
@@ -190,8 +175,8 @@ public class Game extends BukkitRunnable implements Listener {
     }
 
     private void updateStatsAndScoreboard(Player player, int score) {
-        players.put(player, players.get(player)+score);
-        objective.getScore(player.getName()+": ").setScore(players.get(player));
+        this.players.put(player, players.get(player)+score);
+        player.setLevel(players.get(player));
         if(players.get(player) == goal) {
             players.keySet().forEach(p -> p.getInventory().clear());
             winner = player.getDisplayName();
@@ -212,6 +197,26 @@ public class Game extends BukkitRunnable implements Listener {
             }
             entity.setCustomNameVisible(true);
         }), 20L, spawnMobsTime*20L);
+    }
+
+    private int getPlace(Player player) {
+        int place = 1;
+        for(Map.Entry<Player, Integer> entry : getPlayers().entrySet()) {
+            if(players.get(player) < entry.getValue()) {
+                place++;
+            }
+        }
+        return place;
+    }
+
+    public String getWinner() {
+        Player player = players.keySet().stream().findFirst().get();
+        for(Map.Entry<Player, Integer> entry : getPlayers().entrySet()) {
+            if(players.get(player) < entry.getValue()) {
+                player = entry.getKey();
+            }
+        }
+        return player.getName();
     }
 
 }

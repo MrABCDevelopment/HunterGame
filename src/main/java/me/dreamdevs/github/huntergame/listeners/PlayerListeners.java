@@ -25,5 +25,4 @@ public class PlayerListeners implements Listener {
         event.setCancelled(true);
     }
 
-
 }
