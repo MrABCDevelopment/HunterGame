@@ -6,6 +6,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 public class PlayerListeners implements Listener {
 
@@ -24,5 +25,12 @@ public class PlayerListeners implements Listener {
     public void dropEvent(PlayerDropItemEvent event) {
         event.setCancelled(true);
     }
+
+    @EventHandler
+    public void quitEvent(PlayerQuitEvent event) {
+        HunterGameMain.getInstance().getGameManager().forceRemovePlayer(event.getPlayer());
+        event.setQuitMessage(null);
+    }
+
 
 }

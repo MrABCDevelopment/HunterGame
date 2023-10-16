@@ -1,0 +1,149 @@
+messages:
+  # Arena announcements
+  arena-player-join: '&e%PLAYER% joined to this arena &7(&b%CURRENT%/%MAXIMUM%&7)'
+  arena-player-quit: '&e%PLAYER% left arena &7(&b%CURRENT%/%MAXIMUM%&7)'
+  arena-starting-info: '&eStarting in 30 seconds...'
+  arena-started-game-info: '&eThe game has begun! Find or kill them all!'
+  arena-killed-by-slenderman: '&e%PLAYER% was killed by SlenderMan!'
+  arena-slenderman-killed: '&eSlenderMan was killed, be careful, he came back!'
+  arena-game-stopped: '&cThe game has stopped!'
+  arena-stop-starting: '&cWe need few more people to start the game...'
+  arena-collected-pages: '&6Collected pages: %CURRENT%'
+  arena-slenderman-left-game: '&eSlenderMan left the game!'
+  arena-survivor-left-game: '&e%PLAYER% left the game!'
+  arena-page-spawned-announcement: '&eThe page was spawned somewhere in the dark!'
+  arena-spectator-mode: '&eYou are now spectator!'
+  arena-page-name: '&6Page %NUMBER%'
+
+  arena-join-game-info: "&a&l❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚\n&r\n                    &f&lStop It Slender           \n&r\n\n    &e&lFind all pages or die by SlenderMan!
+                         \n   &e&lUse your torches to light up a little!\n&r\n&a&l❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚"
+
+  arena-title: '&c&lStop It Slender!'
+  arena-waiting-subtitle: '&7Waiting for players...'
+  arena-starting-subtitle: '&aStarting in %TIME% seconds...'
+  arena-started-subtitle: '&4Good Luck!'
+  arena-survivors-win-subtitle: "&aSurvivors won the game!"
+  arena-slenderman-win-subtitle: "&cSlenderMan won the game!"
+  arena-no-slots: '&cThis game is full!'
+  arena-still-running: '&cThis game is running!'
+  arena-player-in-game: '&cYou are already in game!'
+
+  arena-boss-bar-waiting: '&c&lStop It Slender'
+  arena-boss-bar-time-left: '&cTime left: %TIME% seconds'
+  arena-boss-bar-teleport-to-lobby: '&cTeleport to lobby in %TIME% seconds'
+
+  # Admin and console messages
+  console-only-player: '&cConsole cannot performs this command.'
+  lobby-set-successfully: '&aYou set the lobby!'
+  slenderman-spawn-set-successfully: '&aYou set SlenderMan spawn location!'
+  survivors-spawn-add-successfully: '&aYou added Survivors spawn location!'
+  pages-spawn-add-successfully: '&aYou added pages spawn location!'
+  saved-arena-settings-successfully: '&aYou saved arena settings!'
+  force-start-game-successfully: '&aSuccessfully forced to start the game!'
+  force-start-game-unsuccessfully: "&cCouldn't force to start the game!"
+  force-stop-game-successfully: '&aSuccessfully forced to stop the game!'
+  force-stop-game-unsuccessfully: "&cCouldn't force to stop the game!"
+  force-restart-game-successfully: '&aSuccessfully forced to restart the game!'
+
+  no-available-arenas: '&cThere is no available arena!'
+  no-permission: '&cYou do not have permission to do this!'
+  no-argument: '&cArgument does not exist!'
+  no-arena: '&cThere is no map with this ID!'
+  no-player: '&cThere is no player!'
+  too-many-arguments: '&cToo many arguments!'
+
+  team-survivors: '&aSurvivors'
+  team-slenderman: '&cSlenderMan'
+
+  # Level, etc.
+  player-reward-exp: '&a+%AMOUNT% Exp'
+  player-level-up: "&a&l❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚\n&r\n                    &f&lStop It Slender           \n&r\n\n                        &3&lLevel Up!
+                         \n   &7You are getting better and better!\n     &7Thanks for playing this game!\n      &7Your current level: &b%LEVEL%\n&r\n&a&l❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚"
+
+  # Lobby announcements
+  click-here: '&aClick here!'
+  lobby-arena-starting-announcement: "&a&l❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚\n&r\n                    &f&lStop It Slender           \n&r\n
+                        &b&lArena &f&l%ARENA% &b&lis starting in 30 seconds!\n&r\n&a&l❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚"
+
+  perks-selected: '&eYou selected %PERK% &efor %TEAM%'
+
+  # Parties
+  party-created: '&aYou created party!'
+  party-removed: '&cThe party was removed!'
+  party-is-not-in-party: '&cYou are not in party!'
+  party-not-leader: '&cYou are not party leader!'
+  party-no-player: '&cThis player is not in your party!'
+  party-kicked-player: '&b%PLAYER% was kicked from party by %LEADER%'
+  party-cannot-find-public-party: '&cThere is no public party!'
+  party-is-already-in-party: '&cYou are already in party!'
+  party-joined-to-party: '&e%PLAYER% joined to party!'
+  party-left-from-party: '&e%PLAYER% left from party!'
+  party-changed-status: '&b%LEADER% changed party status to: %STATUS%'
+  party-is-not-pending-request: '&cYou do not have pending request to join to the party!'
+  party-invited-player: '&aYou invited %TARGET% to your party!'
+  party-request-message: '&7You have new request to join to the party (click here to accept)'
+
+  # Inventories
+  status-on: '&aOn'
+  status-off: '&cOff'
+
+  # My profile menu
+  my-profile-menu-title: 'My Profile'
+  my-profile-stats-item-name: '&bYour Stats'
+  my-profile-stats-item-lore: "&7Wins: &b%WINS%\n&r\n&7Level: &b%LEVEL%\n&7Exp: &b%EXP%\n&r\n&7Collected Pages: &b%COLLECTED_PAGES%\n&r\n&7Killed Survivors: &b%KILLED_SURVIVORS%\n&7Killed SlenderMen: &b%KILLED_SLENDERMEN%\n&7Total Kills: &b%TOTAL_KILLS%"
+  my-profile-settings-item-name: '&bSettings'
+  my-profile-settings-item-lore: "\n&7Click here to change your settings!"
+  my-profile-settings-auto-join-mode-name: '&bAuto Join Mode'
+  my-profile-settings-auto-join-mode-lore: "\n&7If this option is on,\n&7you will be teleported to another\n&7arena, after your game ends.\n&7\n&7Status: %STATUS%"
+  my-profile-settings-show-arena-join-message-name: '&bShow Arena Join Message'
+  my-profile-settings-show-arena-join-message-lore: "\n&7If this option is on,\n&7you will get information about Stop It Slender game\n&7\n&7Status: %STATUS%"
+  my-profile-settings-messages-type-name: '&bMessages Type'
+  my-profile-settings-messages-type-lore: "\n&7This option enables you to\nchoose, which messages you will be getting.\n&7\n&7Type: %TYPE%"
+  my-profile-back-name: '&cBack'
+
+  # Spectator menu
+  spectator-menu-title: 'Spectator Settings'
+  spectator-no-speed: '&cNo Speed'
+  spectator-speed-word: '&aSpeed'
+  spectator-random-player: '&aRandom Player'
+
+  # ArenaEditor menu
+  editor-menu-title: 'Map Editor'
+  editor-menu-minimum-players: '&bMinimum Players: %AMOUNT%'
+  editor-menu-minimum-players-lore: "\n&7Left-click to add 1\n&7Right-click to remove 1"
+  editor-menu-maximum-players: '&bMaximum Players: %AMOUNT%'
+  editor-menu-maximum-players-lore: "\n&7Left-click to add 1\n&7Right-click to remove 1"
+  editor-menu-set-slenderman-spawn: "&bSet SlenderMan Spawn"
+  editor-menu-set-slenderman-spawn-lore: "\n&7Click to set SlenderMan Spawn location"
+  editor-menu-game-time: '&bGame Time: %AMOUNT%'
+  editor-menu-game-time-lore: "\n&7Left-click to add 1\n&7Right-click to remove 1"
+  editor-menu-add-survivors-spawn: '&bAdd Survivors Spawn'
+  editor-menu-add-survivors-spawn-lore: "\n&7Click to add Survivors Spawn location"
+  editor-menu-add-pages-spawn: '&bAdd Pages Spawn'
+  editor-menu-add-pages-spawn-lore: "\n&7Click to add pages spawn location"
+  editor-menu-save-all: '&bSave Settings'
+  editor-menu-save-all-lore: "\n&7Click to save settings"
+
+  # Party menu
+  party-opened: '&aOpened'
+  party-closed: '&cClosed'
+  party-menu-title: '&3&lParty'
+  party-menu-create-party-name: '&bCreate Party'
+  party-menu-create-party-lore: "\n&7Click to create party!"
+  party-menu-delete-party-name: '&bDelete Party'
+  party-menu-delete-party-lore: "\n&7Click to delete party!"
+  party-menu-join-party-name: '&bJoin Random Party'
+  party-menu-join-lore: "\n&7Click to join to random public party!"
+  party-menu-open-party-name: '&bOpen or Close party!'
+  party-menu-open-party-lore: "\n&7Click to open or close the party!"
+  party-menu-party-info-name: '&bParty Info'
+  party-menu-party-info-lore: "&7Leader: &b%LEADER%\n&7Members Count: %MEMBERS_COUNT%\n&7Public: %STATUS%"
+
+  perks-menu-title: '&d&lPerks'
+
+  # Admin menu
+  admin-menu-title: 'Admin Menu'
+  admin-menu-force-start-game: '&aForce Start'
+  admin-menu-force-stop-game: '&aForce Stop'
+  admin-menu-force-restart-game: '&aForce Restart'
+  admin-menu-set-lobby-location: '&aSet Lobby'

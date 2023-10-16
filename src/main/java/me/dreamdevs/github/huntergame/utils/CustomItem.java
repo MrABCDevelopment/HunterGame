@@ -11,16 +11,18 @@ import java.util.List;
 @Getter
 public enum CustomItem {
 
-    ARENA_SELECTOR(Material.CHEST, HunterGameMain.getInstance().getConfig().getString("items.arena-selector.DisplayName"),
-            HunterGameMain.getInstance().getConfig().getStringList("items.arena-selector.Lore")),
-    INFO_BOOK(Material.BOOK, HunterGameMain.getInstance().getConfig().getString("items.how-to-play.DisplayName"),
-            HunterGameMain.getInstance().getConfig().getStringList("items.how-to-play.Lore")),
-    LEAVE(Material.RED_BED, HunterGameMain.getInstance().getConfig().getString("items.leave.DisplayName"),
-            HunterGameMain.getInstance().getConfig().getStringList("items.leave.Lore"));
+    ARENA_SELECTOR(Material.CHEST, HunterGameMain.getInstance().getConfigManager().getConfig("items.yml").getString("items.arena-selector.DisplayName"),
+            HunterGameMain.getInstance().getConfigManager().getConfig("items.yml").getStringList("items.arena-selector.Lore")),
+    MY_PROFILE(Material.PLAYER_HEAD, HunterGameMain.getInstance().getConfigManager().getConfig("items.yml").getString("items.profile.DisplayName"),
+            HunterGameMain.getInstance().getConfigManager().getConfig("items.yml").getStringList("items.profile.Lore")),
 
-    private String displayName;
-    private Material material;
-    private List<String> lore;
+
+    LEAVE(Material.RED_BED, HunterGameMain.getInstance().getConfigManager().getConfig("items.yml").getString("items.leave.DisplayName"),
+            HunterGameMain.getInstance().getConfigManager().getConfig("items.yml").getStringList("items.leave.Lore"));
+
+    private final String displayName;
+    private final Material material;
+    private final List<String> lore;
 
     CustomItem(Material material, String displayName, List<String> lore) {
         this.material = material;

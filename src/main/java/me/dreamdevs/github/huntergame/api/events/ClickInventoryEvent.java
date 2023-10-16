@@ -1,8 +1,8 @@
 package me.dreamdevs.github.huntergame.api.events;
 
 import lombok.Getter;
-import me.dreamdevs.github.huntergame.api.inventory.GItem;
-import me.dreamdevs.github.huntergame.api.inventory.GUI;
+import me.dreamdevs.github.huntergame.api.menu.Menu;
+import me.dreamdevs.github.huntergame.api.menu.MenuItem;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
@@ -17,22 +17,19 @@ public class ClickInventoryEvent extends Event {
     private InventoryClickEvent event;
     private Player player;
     private int slot;
-    private GUI gui;
-    private GItem gItem;
+    private Menu menu;
+    private MenuItem menuItem;
     private ClickType clickType;
 
-    public ClickInventoryEvent(InventoryClickEvent event, Player player, GUI gui, int slot, GItem gItem, ClickType clickType) {
+    public ClickInventoryEvent(InventoryClickEvent event, Player player, Menu menu, int slot, MenuItem menuItem, ClickType clickType) {
         this.event = event;
         this.player = player;
-        this.gui = gui;
+        this.menu = menu;
         this.slot = slot;
-        this.gItem = gItem;
+        this.menuItem = menuItem;
         this.clickType = clickType;
     }
 
-    public static HandlerList getHandlerList() {
-        return list;
-    }
     @Override
     public HandlerList getHandlers() {
         return list;

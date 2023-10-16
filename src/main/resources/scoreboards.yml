@@ -1,0 +1,15 @@
+Scoreboard:
+  Title: '&e&lHunterGame'
+  Waiting:
+    - ''
+    - '&b&lPlayers: &f&l{CURRENT}/{MAX}'
+    - '&2&lGoal: &f&l{GOAL}'
+    - ''
+    - '&6&lwww.spigotmc.org'
+  Game:
+    - ''
+    - '&6&lYour place: {PLACE}'
+    - '&a&lTime Left: &f&l{TIME}'
+    - '&3&lGoal: &f&l{GOAL}'
+    - ''
+    - '&6&lwww.spigotmc.org'

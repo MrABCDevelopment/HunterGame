@@ -1,0 +1,41 @@
+levels:
+  1:
+    required-exp: 0
+  2:
+    required-exp: 50
+  3:
+    required-exp: 75
+  4:
+    required-exp: 100
+  5:
+    required-exp: 150
+  6:
+    required-exp: 200
+  7:
+    required-exp: 300
+  8:
+    required-exp: 400
+  9:
+    required-exp: 500
+  10:
+    required-exp: 600
+  11:
+    required-exp: 700
+  12:
+    required-exp: 800
+  13:
+    required-exp: 900
+  14:
+    required-exp: 1000
+  15:
+    required-exp: 1250
+  16:
+    required-exp: 1500
+  17:
+    required-exp: 1750
+  18:
+    required-exp: 2000
+  19:
+    required-exp: 2250
+  20:
+    required-exp: 2500

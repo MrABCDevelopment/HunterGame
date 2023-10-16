@@ -1,0 +1,9 @@
+
+}
+java:S1319"bThe type of "menus" should be an interface such as "Map" rather than the implementation "HashMap".(ÆÎÀøùÿÿÿÿ
+F
+java:S1444"+Make this "public static menus" field final(ÆÎÀøùÿÿÿÿ
+8
+java:S2386"Make this member "protected".(ÆÎÀøùÿÿÿÿ
+`
+java:S1124"EReorder the modifiers to comply with the Java Language Specification.(ÆÎÀøùÿÿÿÿ

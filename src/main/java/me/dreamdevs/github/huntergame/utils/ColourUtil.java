@@ -1,9 +1,7 @@
 package me.dreamdevs.github.huntergame.utils;
 
-import lombok.NonNull;
 import lombok.experimental.UtilityClass;
 import net.md_5.bungee.api.ChatColor;
-import org.apache.commons.lang.Validate;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,13 +26,11 @@ public class ColourUtil {
     }
 
     public static List<String> colouredLore(String... lore) {
-        if(lore == null) return new ArrayList<>();
-        return Arrays.stream(lore).map(ColourUtil::colorize).collect(Collectors.toList());
+        return (lore != null) ? Arrays.stream(lore).map(ColourUtil::colorize).collect(Collectors.toList()) : new ArrayList<>();
     }
 
     public static List<String> colouredLore(List<String> lore) {
-        if(lore == null) return new ArrayList<>();
-        return lore.stream().filter(Objects::nonNull).map(ColourUtil::colorize).collect(Collectors.toList());
+        return (lore != null) ? lore.stream().filter(Objects::nonNull).map(ColourUtil::colorize).collect(Collectors.toList()) : new ArrayList<>();
     }
 
 }

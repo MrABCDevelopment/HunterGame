@@ -1,0 +1,14 @@
+
+a
+java:S1192D"KDefine a constant instead of duplicating this literal "slenderman" 3 times.(§ÀÊá
+c
+java:S1192‚"LDefine a constant instead of duplicating this literal "arena-title" 3 times.(µ±Ùå
+e
+java:S1192C"JDefine a constant instead of duplicating this literal "survivors" 4 times.(Šï¶Çşÿÿÿÿ
+]
+java:S1192W"GDefine a constant instead of duplicating this literal "%TIME%" 5 times.(ğ‹åÄ
+f
+java:S5361"HReplace this call to "replaceAll()" by a call to the "replace()" method.(¼Î‹É8ÁŠ±‹1
+Y	java:S125‡"<This block of commented-out lines of code should be removed.(³²©Ã8¿æŠ±‹1
+G
+java:S1874–"1Remove this use of "addPlayer"; it is deprecated.(€œm

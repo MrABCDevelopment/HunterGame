@@ -4,8 +4,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
 import java.io.File;
+import java.util.Random;
 
 public class Util {
+
+    private static final Random random = new Random();
 
     public static void createFile(File file) {
         if(!file.exists()) {
@@ -52,6 +55,10 @@ public class Util {
 
     public static boolean chance(double chance) {
         return Math.random() < chance;
+    }
+
+    public static int getRandomNumber(int bound) {
+        return random.nextInt(bound);
     }
 
 }

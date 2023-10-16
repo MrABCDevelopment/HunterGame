@@ -1,0 +1,26 @@
+items:
+  how-to-play:
+    DisplayName: '&e&lHow to Play'
+    Lore:
+      - ''
+      - '&eRight-click to see information.'
+    #In seconds
+    Cooldown: 3
+    Message: '\n       &a&lHUNTER&e&lGAME      \n       &7Rules are simple!     \n  &7You spawn on a random map, \n  &7kill mobs and earn points. \n  &7If you earn enough points, \n  &7you win the game.          \n           &7Have fun!         '
+  arena-selector:
+    DisplayName: '&a&lArena Selector'
+    Lore:
+      - ''
+      - '&eRight-click to open &a&lArena Selector'
+    Cooldown: 3
+  leave:
+    DisplayName: '&c&lLeave'
+    Lore:
+      - ''
+      - '&eRight-click to leave arena.'
+    Cooldown: 3
+  menu:
+    DisplayName: '&b&lMenu'
+    Lore:
+      - '&eRight-click to open &b&lMenu'
+    Cooldown: 3

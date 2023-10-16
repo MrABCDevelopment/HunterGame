@@ -1,19 +1,16 @@
 package me.dreamdevs.github.huntergame.managers;
 
-import lombok.Getter;
 import me.dreamdevs.github.huntergame.HunterGameMain;
 import me.dreamdevs.github.huntergame.utils.ColourUtil;
-import me.dreamdevs.github.huntergame.utils.Util;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.util.HashMap;
 import java.util.Map;
 
-@Getter
 public class MessagesManager {
 
-    private Map<String, String> messages;
+    private final Map<String, String> messages;
 
     public MessagesManager(HunterGameMain plugin) {
         messages = new HashMap<>();
@@ -22,10 +19,13 @@ public class MessagesManager {
 
     public void load(HunterGameMain plugin) {
         messages.clear();
-        FileConfiguration config = plugin.getConfig();
+        FileConfiguration config = plugin.getConfigManager().getConfig("messages.yml");
         ConfigurationSection section = config.getConfigurationSection("messages");
         section.getKeys(false).forEach(s -> messages.put(s, ColourUtil.colorize(section.getString(s))));
-        Util.sendPluginMessage("&aLoaded messages!");
+    }
+
+    public String getMessage(String keyMessage) {
+        return messages.get(keyMessage);
     }
 
 }
